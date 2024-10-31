@@ -1,6 +1,12 @@
-output "location" {
-  description = "The Azure region"
-  value       = azurerm_resource_group.avd_rg.location
+/*
+output "Network_location" {
+  description = "The Azure network region"
+  value       = azurerm_resource_group.avd_net_rg.location
+}
+
+output "Storage_location" {
+  description = "The Azure storage region"
+  value       = azurerm_resource_group.avd_stor_rg.location
 }
 
 output "dnsservers" {
@@ -22,3 +28,4 @@ output "session_host_count" {
     description = "Number of host VMs created"
     value = var.avd_prod_session_host_count
 }
+*/
