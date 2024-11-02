@@ -21,13 +21,13 @@ resource "azurerm_storage_account" "fs_sa" {
 }
 
 resource azurerm_storage_share "fs_share" {
-    name                 = var.file_share_name
+    name                 = "${var.env}${var.file_share_name}"
     storage_account_name = azurerm_storage_account.fs_sa.name
-    quota                = 5120
+    quota                = 1024
 }
 
 resource "azurerm_storage_share" "fslogix" {
-    name                 = var.fslogix_share_name
+    name                 = "${var.env}${var.fslogix_share_name}"
     storage_account_name = azurerm_storage_account.fs_sa.name
     quota                = 1024
   
