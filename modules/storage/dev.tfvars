@@ -1,7 +1,0 @@
-env                               = "dev"
-fslogix_file_storage_account_name = "avdfslogixprofilestorage"
-file_storage_account_name         = "grsprofilestorage"
-fslogix_share_name                = "fslogix"
-file_share_name                   = "avdprofiles"
-storage_account_tier              = "Premium"
-storage_account_replication_type  = "LRS"
