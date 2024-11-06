@@ -26,31 +26,31 @@ variable "avd_compute_rg" {
 variable "avd_network_rg" {
     type        = string
     description = "predefined resource group for infrastructure resources. Will be referenced in data sources"
-    default = "dev-avd-net-rg"
+    default     = "dev-avd-net-rg"
 }
 
 variable "avd_subnet" {
     type        = string
     description = "predefined subnet for infrastructure resources. Will be referenced in data sources"
-    default = "dev-avd-subnet"
+    default     = "dev-avd-subnet"
 }
 
 variable "avd_vnet" {
     type        = string
     description = "predefined subnet for infrastructure resources. Will be referenced in data sources"
-    default = "dev-avd-vnet"
+    default     = "dev-avd-vnet"
 }
 
 # AVD Pool parameters
 # Prod Pool
 variable "avd_workspace" {
-    type = string
+    type        = string
     description = "workspace name"
-    default = "avd_workspace"
+    default     = "avd_workspace"
 }
 
 variable "avd_pool_name" {
-    type = string
+    type        = string
     description = "avd pool name"
     default     = "avd-pool"
 }
@@ -111,32 +111,75 @@ variable "avd_session_host_vm_size" {
 }
 
 variable "avd_session_host_image_publisher" {
-    type = string
+    type        = string
     description = "os storage image reference"
-    default = "MicrosoftWindowsDesktop"
+    default     = "MicrosoftWindowsDesktop"
 }
 
 variable "avd_session_host_image_offer" {
-    type = string
+    type        = string
     description = "os storage image offer"
-    default = "Windows-11"
+    default     = "Windows-11"
 }
 
 variable "avd_session_host_image_sku" {
-    type = string
+    type        = string
     description = "os storage image sky"
-    default = "win11-22h2-avd"
+    default     = "win11-22h2-avd"
 }
 
 variable "avd_session_host_os_profile_user" {
-    type = string
+    type        = string
     description = "os admin user"
-    default = "adminuser"
+    default     = "adminuser"
 }
 
 variable "avd_session_host_os_profile_password" {
-    type = string
+    type        = string
     description = "os admin user"
-    default = "Early-Autum_Flowers#"
+    default     = "Early-Autum_Flowers#"
+    sensitive   = true
+}
+
+variable "domain_name" {
+    type        = string
+    description = "domain name"
+    default     = "getrealsurfaces.com"
+}
+
+variable "ou_path" {
+    type        = string
+    description = "Ou path (optional)"
+    default     = ""
+}
+
+variable "domain_user_upn" {
+    type        = string
+    description = "domain user joiner"
+    default     = "tech"
+}
+
+variable "domain_password" {
+    type        = string
+    description = "domain user joiner pw"
+    default     = ""
     sensitive = true
+}
+
+variable "avd_aad_group_name" {
+      type        = string
+      default     = "VM-Access-Users"
+      description = "Entra ID Group to allow access to AVD"
+}
+
+variable "vm_user_login_role_name" {
+    type        = string
+    default     = "Virtual Machine User Login"
+    description = "Azure role for virtual machine user login"
+}
+
+variable "desktop_virtualization_role_name" {
+    type        = string
+    default     = "Desktop Virtualization User"
+    description = "Azure role for virtual machine user login"
 }
