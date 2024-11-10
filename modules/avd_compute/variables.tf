@@ -1,44 +1,32 @@
-#adding sub here, but will centralize later
-variable "az_subscription_id" {
-    type        = string
-    description = "subscription where all resources will be deployed"
-    default     = ""  #Enter at runtime
-}
-
 #env variables for build
 variable "location" {
     type    = string
-    default = "eastus"
+    description = "Primary Azure zone for deployment"
 }
 
 variable "env" {
     type    = string
-    default = "dev"
 }
 
 variable "avd_compute_rg" {
     type        = string
     description = "resource group where all avd host and hostpool infra will be stored"
-    default     = "avd-compute-rg"
 }
 
 # Network dependencies for AVD pool
-variable "avd_network_rg" {
+variable "avd_net_rg" {
     type        = string
-    description = "predefined resource group for infrastructure resources. Will be referenced in data sources"
-    default     = "dev-avd-net-rg"
+    description = "predefined resource group for network resources. Will be referenced in data sources"
 }
 
-variable "avd_subnet" {
+variable "avd_subnet_name" {
     type        = string
-    description = "predefined subnet for infrastructure resources. Will be referenced in data sources"
-    default     = "dev-avd-subnet"
+    description = "predefined subnet for avd network. Will be referenced in data sources"
 }
 
-variable "avd_vnet" {
+variable "vnet_spoke_name" {
     type        = string
-    description = "predefined subnet for infrastructure resources. Will be referenced in data sources"
-    default     = "dev-avd-vnet"
+    description = "predefined virtual network. Will be referenced in data sources"
 }
 
 # AVD Pool parameters
@@ -46,140 +34,117 @@ variable "avd_vnet" {
 variable "avd_workspace" {
     type        = string
     description = "workspace name"
-    default     = "avd_workspace"
 }
 
 variable "avd_pool_name" {
     type        = string
     description = "avd pool name"
-    default     = "avd-pool"
 }
 
 variable "avd_pool_friendly_name" {
     type        = string
     description = "avd pool friendly name"
-    default     = "AVD Production Host Pool"
 }
 
 variable "avd_pool_loadbalancer" {
     type        = string
     description = "avd pool load balancer type"
-    default     = "BreadthFirst"
+}
+
+variable "avd_pool_custom_rdp_properties" {
+    type         = string
+    default = "Custom RDP properties provided to sessions"
 }
 
 variable "avd_pool_max_session_limit" {
     type        = number
     description = "avd pool max session limit"
-    default     = 5
 }
 
-variable "avd_rotation_token_days" {
-    type        = number
-    description = "number of days for avd token rotation"
-    default     = 30
-}
-
-variable "rfc3339" {
+variable "avd_pool_registation_expiration" {
     type        = string
-    default     = "2024-11-20T12:43:13Z"
-    description = "Registration token expiration"
+    description = "expiration in hours for desktop hostpool registation"
 }
 
 # prod session host
 variable "avd_session_host_count" {
     type        = number
     description = "Number of session hosts to deploy"
-    default     = 2
 }
 
 variable "avd_session_host_name" {
     type        = string
     description = "session host name"
-    default     = "avd-session-host"
 }
 
 variable "avd_session_host_nic_name" {
     type        = string
     description = "session host nic name"
-    default     = "avd-session-host-nic"
 }
 
 variable "avd_session_host_vm_size" {
     type        = string
     description = "azure vm offering size"
-    default     = "Standard_DC1s_v2"
 }
 
 variable "avd_session_host_image_publisher" {
     type        = string
     description = "os storage image reference"
-    default     = "MicrosoftWindowsDesktop"
 }
 
 variable "avd_session_host_image_offer" {
     type        = string
     description = "os storage image offer"
-    default     = "Windows-11"
 }
 
 variable "avd_session_host_image_sku" {
     type        = string
     description = "os storage image sky"
-    default     = "win11-22h2-avd"
 }
 
 variable "avd_session_host_os_profile_user" {
     type        = string
     description = "os admin user"
-    default     = "adminuser"
 }
 
 variable "avd_session_host_os_profile_password" {
     type        = string
-    description = "os admin user"
-    default     = "Early-Autum_Flowers#"
+    description = "os admin password"
     sensitive   = true
 }
 
 variable "domain_name" {
     type        = string
     description = "domain name"
-    default     = "getrealsurfaces.com"
 }
 
 variable "ou_path" {
     type        = string
     description = "Ou path (optional)"
-    default     = ""
 }
 
 variable "domain_user_upn" {
     type        = string
     description = "domain user joiner"
-    default     = "tech"
 }
 
 variable "domain_password" {
     type        = string
     description = "domain user joiner pw"
-    default     = ""
     sensitive = true
 }
 
 variable "avd_aad_group_name" {
       type        = string
-      default     = "VM-Access-Users"
       description = "Entra ID Group to allow access to AVD"
 }
 
 variable "vm_user_login_role_name" {
     type        = string
-    default     = "Virtual Machine User Login"
     description = "Azure role for virtual machine user login"
 }
 
 variable "desktop_virtualization_role_name" {
     type        = string
-    default     = "Desktop Virtualization User"
     description = "Azure role for virtual machine user login"
 }

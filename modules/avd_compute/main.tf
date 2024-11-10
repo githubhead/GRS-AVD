@@ -1,13 +1,8 @@
-provider "azurerm" {
-    features {}
-    subscription_id = var.az_subscription_id
-}
-
 # Creating data object to query subnet info for hosts
 data "azurerm_subnet" "avdsubnet" {
-    name                 = var.avd_subnet
-    virtual_network_name = var.avd_vnet
-    resource_group_name  = var.avd_network_rg
+    name                 = var.avd_subnet_name
+    virtual_network_name = var.vnet_spoke_name
+    resource_group_name  = var.avd_net_rg
 }
 
 # Assumes only one subnet exist in the vnet. 
@@ -28,8 +23,8 @@ resource "azurerm_virtual_desktop_workspace" "avd_workspace" {
     name                = "${var.env}-${var.avd_workspace}"
     resource_group_name = azurerm_resource_group.avd_compute_rg.name
     location            = azurerm_resource_group.avd_compute_rg.location
-    friendly_name       = "${var.env} AVD Workspace"
-    description         = "${var.env} AVD Workspace"
+    friendly_name       = "${upper(var.env)} AVD Workspace"
+    description         = "${upper(var.env)} AVD Workspace"
 }
 
 # AVD host pool
@@ -37,29 +32,31 @@ resource azurerm_virtual_desktop_host_pool "avd_hostpool" {
     resource_group_name      = azurerm_resource_group.avd_compute_rg.name
     name                     = "${var.env}-${var.avd_pool_name}"
     location                 = azurerm_resource_group.avd_compute_rg.location
-    friendly_name            = "${var.env}-${var.avd_pool_friendly_name}"
-    description              = "${var.env} AVD HostPool"
+    friendly_name            = "${upper(var.env)}-${var.avd_pool_friendly_name}"
+    description              = "${upper(var.env)} AVD HostPool"
     load_balancer_type       = var.avd_pool_loadbalancer
-    custom_rdp_properties    = "audiocapturemode:i:1;audiomode:i:0;targetisaadjoined:i:1;"
+    custom_rdp_properties    = var.avd_pool_custom_rdp_properties
     type                     = "Pooled"
     maximum_sessions_allowed = var.avd_pool_max_session_limit
     validate_environment     = true
     start_vm_on_connect      = true
+    
 }
 
 resource "azurerm_virtual_desktop_host_pool_registration_info" "avd_hostpool_regitration_info" {
     hostpool_id     = azurerm_virtual_desktop_host_pool.avd_hostpool.id
-    expiration_date = timeadd(format("%sT00:00:00Z", formatdate("YYYY-MM-DD", timestamp())), "3600m") #var.rfc3339
+    expiration_date = timeadd(timestamp(), var.avd_pool_registation_expiration)
 }
 
 resource azurerm_virtual_desktop_application_group "avd_app_group" {
-    name                = "${var.env}-${var.avd_pool_name}-app-group"
-    resource_group_name = azurerm_resource_group.avd_compute_rg.name
-    location            = azurerm_resource_group.avd_compute_rg.location
-    host_pool_id        = azurerm_virtual_desktop_host_pool.avd_hostpool.id
-    type                = "Desktop"
-    friendly_name       = "${var.env} AVD Desktop Application group"
-    depends_on          = [ azurerm_virtual_desktop_host_pool.avd_hostpool ]
+    name                         = "${var.env}-${var.avd_pool_name}-app-group"
+    resource_group_name          = azurerm_resource_group.avd_compute_rg.name
+    location                     = azurerm_resource_group.avd_compute_rg.location
+    host_pool_id                 = azurerm_virtual_desktop_host_pool.avd_hostpool.id
+    type                         = "Desktop"
+    friendly_name                = "${upper(var.env)} AVD Desktop Application group"
+    default_desktop_display_name = "${upper(var.env)} AVD Desktop"
+    depends_on                   = [ azurerm_virtual_desktop_host_pool.avd_hostpool ]
 }
 
 # Workspace and Desktop Application Group (DAG) association
@@ -132,10 +129,6 @@ resource "azurerm_windows_virtual_machine" "avd_hostpool_session_host" {
         azurerm_resource_group.avd_compute_rg,
         azurerm_network_interface.avd_hostpool_nic
      ]
-}
-
-resource "time_rotating" "avd_token" {
-    rotation_days = var.avd_rotation_token_days
 }
 
 # Join VMs to Entra ID
