@@ -27,6 +27,8 @@ common_share_name                = "commonshare"
 
 # AVD Compute Variables
 avd_compute_rg                       = "avd-compute-rg"
+avd_autoscale_role                   = "avd-autoscale-role"
+avd_autoscale_role_desc              = "AVD Autoscale Custom Role"
 avd_workspace                        = "avd_workspace"
 avd_pool_name                        = "avd-pool"
 avd_pool_friendly_name               = "AVD Host Pool"
@@ -47,6 +49,53 @@ domain_name                          = ""
 ou_path                              = ""
 domain_user_upn                      = ""
 domain_password                      = ""
+
+# scaling plan variables
+avd_scaling_plan_name                                     = "avd-scaling-plan"
+avd_scaling_plan_friendlyname                             = "Week and weekend AVD scaling plan"
+avd_scaling_plan_timezone                                 = "Eastern Standard Time"
+# scaling plan weekday schedule
+avd_scaling_plan_weekday_name                             = "Weekday"
+avd_scaling_plan_weekday_days                             = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+avd_scaling_plan_weekday_ramp_up_start_time               = "07:00"
+avd_scaling_plan_weekday_ramp_up_lb_algo                  = "BreadthFirst"
+# min % of session host to start during ramp-up for peak hours. If value is 10% and host pool is configured with 10 hosts, a minimum of 1 session host is available to take user connections.
+avd_scaling_plan_weekday_ramp_up_minimum_host_pct         = 30
+# % of used ttl host pool capacity to turn on/off hosts during rump up/peak hrs. If ttl host pool capacity is 100 sessions and this value is set to 60, new hosts will be turned on when sessions reach 60
+avd_scaling_plan_weekday_ramp_up_capacity_threshold_pct   = 80
+avd_scaling_plan_weekday_ramp_up_peak_time                = "09:00"
+avd_scaling_plan_weekday_ramp_up_peak_lb_algo             = "DepthFirst"
+avd_scaling_plan_weekday_ramp_down_start_time             = "16:00"
+avd_scaling_plan_weekday_ramp_down_lb_algo                = "BreadthFirst"
+# min % of session hosts that we'd like to get to for ramp-down and off-peak hours. If this value is set to 10% and ttl hosts is 10, autoscale will aim to wind down to 1 host
+avd_scaling_plan_weekday_ramp_down_minimum_host_pct       = 20
+avd_scaling_plan_weekday_ramp_down_force_logoff           = false
+avd_scaling_plan_weekday_ramp_down_wait_time              = 30
+avd_scaling_plan_weekday_ramp_down_notification_msg       = "Your session will end in 30mins."
+# % of used ttl host pool capacity to turn on/off hosts during ramp down/off-peak. If ttl host pool capacity is 100 sessions and this value is set to 60, new hosts will be turned on ONLY if sessions are above this threshold. Otherwise, they'll be turned off
+avd_scaling_plan_weekday_ramp_down_capacity_threshold_pct = 50
+avd_scaling_plan_weekday_ramp_down_stop_hosts_when        = "ZeroActiveSessions"
+avd_scaling_plan_weekday_off_peak_start_time              = "19:00"
+avd_scaling_plan_weekday_off_lb_algo                      = "BreadthFirst"
+# scaling plan weekend schedule
+avd_scaling_plan_weekend_name                             = "Weekend"
+avd_scaling_plan_weekend_days                             = ["Saturday", "Sunday"]
+avd_scaling_plan_weekend_ramp_up_start_time               = "08:00"
+avd_scaling_plan_weekend_ramp_up_lb_algo                  = "BreadthFirst"
+avd_scaling_plan_weekend_ramp_up_minimum_host_pct         = 10
+avd_scaling_plan_weekend_ramp_up_capacity_threshold_pct   = 80
+avd_scaling_plan_weekend_ramp_up_peak_time                = "09:00"
+avd_scaling_plan_weekend_ramp_up_peak_lb_algo             = "DepthFirst"
+avd_scaling_plan_weekend_ramp_down_start_time             = "14:00"
+avd_scaling_plan_weekend_ramp_down_lb_algo                = "BreadthFirst"
+avd_scaling_plan_weekend_ramp_down_minimum_host_pct       = 20
+avd_scaling_plan_weekend_ramp_down_force_logoff           = false
+avd_scaling_plan_weekend_ramp_down_wait_time              = 30
+avd_scaling_plan_weekend_ramp_down_notification_msg       = "Your session will end in 30mins."
+avd_scaling_plan_weekend_ramp_down_capacity_threshold_pct = 50
+avd_scaling_plan_weekend_ramp_down_stop_hosts_when        = "ZeroActiveSessions"
+avd_scaling_plan_weekend_off_peak_start_time              = "16:00"
+avd_scaling_plan_weekend_off_lb_algo                      = "BreadthFirst"
 
 # RBAC
 avd_aad_group_name                   = "VM-Access-Users"

@@ -19,6 +19,34 @@ resource "azurerm_resource_group" "avd_compute_rg" {
     location = var.location
 }
 
+resource "random_uuid" "avd_random_uuid" {
+}
+
+# For the autoscale to work we need a custom AAD role and assign it to the Azure Virtual Desktop service
+data "azurerm_role_definition" "autoscale_power_role" {
+  name = "Desktop Virtualization Power On Off Contributor"
+  
+}
+
+data "azurerm_subscription" "current" {
+}
+
+data "azuread_service_principal" "avd_autoscale_spn" {
+  display_name = "Azure Virtual Desktop"
+}
+
+# Assign role created
+resource "azurerm_role_assignment" "avd_autoscale_role_assignment" {
+  principal_id                     = data.azuread_service_principal.avd_autoscale_spn.object_id
+  scope                            = data.azurerm_subscription.current.id
+  role_definition_id               = data.azurerm_role_definition.autoscale_power_role.id
+  
+  lifecycle {
+    ignore_changes = [ role_definition_id ]
+  }
+}
+
+# Create Workspace for AVD pools
 resource "azurerm_virtual_desktop_workspace" "avd_workspace" {
     name                = "${var.env}-${var.avd_workspace}"
     resource_group_name = azurerm_resource_group.avd_compute_rg.name
@@ -27,7 +55,7 @@ resource "azurerm_virtual_desktop_workspace" "avd_workspace" {
     description         = "${upper(var.env)} AVD Workspace"
 }
 
-# AVD host pool
+# Create AVD host pool
 resource azurerm_virtual_desktop_host_pool "avd_hostpool" {
     resource_group_name      = azurerm_resource_group.avd_compute_rg.name
     name                     = "${var.env}-${var.avd_pool_name}"
@@ -48,6 +76,7 @@ resource "azurerm_virtual_desktop_host_pool_registration_info" "avd_hostpool_reg
     expiration_date = timeadd(timestamp(), var.avd_pool_registation_expiration)
 }
 
+# Create desktop application group (DAG)
 resource azurerm_virtual_desktop_application_group "avd_app_group" {
     name                         = "${var.env}-${var.avd_pool_name}-app-group"
     resource_group_name          = azurerm_resource_group.avd_compute_rg.name
@@ -65,7 +94,61 @@ resource "azurerm_virtual_desktop_workspace_application_group_association" "avd_
     workspace_id         = azurerm_virtual_desktop_workspace.avd_workspace.id
 }
 
-# Session Host
+#Create scaling plan
+resource "azurerm_virtual_desktop_scaling_plan" "avd_scaling_plan" {
+  name = "${var.env}-${var.avd_scaling_plan_name}"
+  location = azurerm_resource_group.avd_compute_rg.location
+  resource_group_name = azurerm_resource_group.avd_compute_rg.name
+  friendly_name = "${upper(var.env)}-${var.avd_scaling_plan_friendlyname}"
+  description = "${var.env} Scaling Plan for week and weekends"
+  time_zone = var.avd_scaling_plan_timezone
+  host_pool {
+    hostpool_id = azurerm_virtual_desktop_host_pool.avd_hostpool.id
+    scaling_plan_enabled = true
+  }
+  schedule {
+        name = "${var.env}-${var.avd_scaling_plan_weekday_name}"
+        days_of_week = var.avd_scaling_plan_weekday_days
+        ramp_up_start_time = var.avd_scaling_plan_weekday_ramp_up_start_time
+        ramp_up_load_balancing_algorithm     = var.avd_scaling_plan_weekday_ramp_up_lb_algo
+        ramp_up_minimum_hosts_percent        = var.avd_scaling_plan_weekday_ramp_up_minimum_host_pct
+        ramp_up_capacity_threshold_percent   = var.avd_scaling_plan_weekday_ramp_up_capacity_threshold_pct
+        peak_start_time                      = var.avd_scaling_plan_weekday_ramp_up_peak_time
+        peak_load_balancing_algorithm        = var.avd_scaling_plan_weekday_ramp_up_peak_lb_algo
+        ramp_down_start_time                 = var.avd_scaling_plan_weekday_ramp_down_start_time
+        ramp_down_load_balancing_algorithm   = var.avd_scaling_plan_weekday_ramp_down_lb_algo
+        ramp_down_minimum_hosts_percent      = var.avd_scaling_plan_weekday_ramp_down_minimum_host_pct
+        ramp_down_force_logoff_users         = var.avd_scaling_plan_weekday_ramp_down_force_logoff
+        ramp_down_wait_time_minutes          = var.avd_scaling_plan_weekday_ramp_down_wait_time
+        ramp_down_notification_message       = var.avd_scaling_plan_weekday_ramp_down_notification_msg
+        ramp_down_capacity_threshold_percent = var.avd_scaling_plan_weekday_ramp_down_capacity_threshold_pct
+        ramp_down_stop_hosts_when            = var.avd_scaling_plan_weekday_ramp_down_stop_hosts_when
+        off_peak_start_time                  = var.avd_scaling_plan_weekday_off_peak_start_time
+        off_peak_load_balancing_algorithm    = var.avd_scaling_plan_weekday_off_lb_algo
+  }
+  schedule {
+        name = "${var.env}-${var.avd_scaling_plan_weekend_name}"
+        days_of_week = var.avd_scaling_plan_weekend_days
+        ramp_up_start_time = var.avd_scaling_plan_weekend_ramp_up_start_time
+        ramp_up_load_balancing_algorithm     = var.avd_scaling_plan_weekend_ramp_up_lb_algo
+        ramp_up_minimum_hosts_percent        = var.avd_scaling_plan_weekend_ramp_up_minimum_host_pct
+        ramp_up_capacity_threshold_percent   = var.avd_scaling_plan_weekend_ramp_up_capacity_threshold_pct
+        peak_start_time                      = var.avd_scaling_plan_weekend_ramp_up_peak_time
+        peak_load_balancing_algorithm        = var.avd_scaling_plan_weekend_ramp_up_peak_lb_algo
+        ramp_down_start_time                 = var.avd_scaling_plan_weekend_ramp_down_start_time
+        ramp_down_load_balancing_algorithm   = var.avd_scaling_plan_weekend_ramp_down_lb_algo
+        ramp_down_minimum_hosts_percent      = var.avd_scaling_plan_weekend_ramp_down_minimum_host_pct
+        ramp_down_force_logoff_users         = var.avd_scaling_plan_weekend_ramp_down_force_logoff
+        ramp_down_wait_time_minutes          = var.avd_scaling_plan_weekend_ramp_down_wait_time
+        ramp_down_notification_message       = var.avd_scaling_plan_weekend_ramp_down_notification_msg
+        ramp_down_capacity_threshold_percent = var.avd_scaling_plan_weekend_ramp_down_capacity_threshold_pct
+        ramp_down_stop_hosts_when            = var.avd_scaling_plan_weekend_ramp_down_stop_hosts_when
+        off_peak_start_time                  = var.avd_scaling_plan_weekend_off_peak_start_time
+        off_peak_load_balancing_algorithm    = var.avd_scaling_plan_weekend_off_lb_algo
+  }
+}
+
+# Create Session Host
 locals {
     registration_token = azurerm_virtual_desktop_host_pool_registration_info.avd_hostpool_regitration_info.token
 }
@@ -192,7 +275,7 @@ resource "azuread_group" "avd_aad_group" {
 }
 */
 
-# Assign tole to Desktop Application Group
+# Assign role to Desktop Application Group
 resource "azurerm_role_assignment" "appgroup_role_assignment" {
   scope              = azurerm_virtual_desktop_application_group.avd_app_group.id
   role_definition_id = data.azurerm_role_definition.vm_user_login_role.id
@@ -288,3 +371,31 @@ PROTECTED_SETTINGS
     ]
 }
 */
+
+
+/*
+Creating section to demonstrate applications configurations
+These tasks however should probably be moved to their own repo as they are day-to-day tasks instead of infra build
+*/
+resource "azurerm_virtual_desktop_application_group" "remote_application" {
+  name = "remote_application"
+  location = azurerm_resource_group.avd_compute_rg.location
+  resource_group_name = azurerm_resource_group.avd_compute_rg.name
+  type = "RemoteApp"
+  host_pool_id = azurerm_virtual_desktop_host_pool.avd_hostpool.id
+  friendly_name = "TestAppGroup"
+  description = "Test Application Group"
+}
+
+resource "azurerm_virtual_desktop_application" "app_adobe" {
+  name = "adobe"
+  application_group_id = azurerm_virtual_desktop_application_group.remote_application.id
+  friendly_name = "Adobe Reader"
+  description = "Basic Adobe Reader App"
+  path = "C:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\AcroRd32.exe"
+  command_line_argument_policy = "DoNotAllow"
+  command_line_arguments = "--incognito"
+  show_in_portal = false
+  icon_path = "C:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\AcroRd32.exe"
+  icon_index = 0
+}

@@ -31,6 +31,16 @@ variable "vnet_spoke_name" {
 
 # AVD Pool parameters
 # Prod Pool
+variable "avd_autoscale_role" {
+    type        = string
+    description = "AVD autoscale role name"
+}
+
+variable "avd_autoscale_role_desc" {
+    type        = string
+    description = "AVD autoscale role description"
+}
+
 variable "avd_workspace" {
     type        = string
     description = "workspace name"
@@ -65,6 +75,205 @@ variable "avd_pool_registation_expiration" {
     type        = string
     description = "expiration in hours for desktop hostpool registation"
 }
+
+# autoscaling plan variables
+variable "avd_scaling_plan_name" {
+    type        = string
+    description = "AVD scaling plan name"
+}
+
+variable "avd_scaling_plan_friendlyname" {
+    type        = string
+    description = "AVD scaling plan friendly name"
+}
+
+variable "avd_scaling_plan_timezone" {
+    type        = string
+    description = "AVD scaling plan timezone"
+}
+
+# scaling plan weekday schedule
+variable "avd_scaling_plan_weekday_name" {
+    type        = string
+    description = "AVD scaling plan weekday name"
+}
+
+variable "avd_scaling_plan_weekday_days" {
+    type        = list(string)
+    description = "AVD scaling plan weekday applicable days"
+}
+
+variable "avd_scaling_plan_weekday_ramp_up_start_time" {
+    type        = string
+    description = "AVD scaling plan weekday ramp up start time"
+}
+
+variable "avd_scaling_plan_weekday_ramp_up_lb_algo" {
+    type        = string
+    description = "AVD scaling plan weekday ramp up LB algorythm"
+}
+
+variable "avd_scaling_plan_weekday_ramp_up_minimum_host_pct" {
+    type        = number
+    description = "AVD scaling plan weekday ramup up minimum hosts percent"
+}
+
+variable "avd_scaling_plan_weekday_ramp_up_capacity_threshold_pct" {
+    type        = number
+    description = "AVD scaling plan weekday ramup up capacity threshold percent"
+}
+
+variable "avd_scaling_plan_weekday_ramp_up_peak_time" {
+    type        = string
+    description = "AVD scaling plan weekday ramp up peak start time"
+}
+
+variable "avd_scaling_plan_weekday_ramp_up_peak_lb_algo" {
+    type        = string
+    description = "AVD scaling plan weekday ramp up peak LB algorithm"
+}
+
+variable "avd_scaling_plan_weekday_ramp_down_start_time" {
+    type        = string
+    description = "AVD scaling plan weekday ramp DOWN start time"
+}
+
+variable "avd_scaling_plan_weekday_ramp_down_lb_algo" {
+    type        = string
+    description = "AVD scaling plan weekday ramp DOWN LB algorithm"
+}
+
+variable "avd_scaling_plan_weekday_ramp_down_minimum_host_pct" {
+    type        = number
+    description = "AVD scaling plan weekday ramp DOWN minimum hosts percent"
+}
+
+variable "avd_scaling_plan_weekday_ramp_down_force_logoff" {
+    type        = bool
+    description = "AVD scaling plan weekday ramp DOWN force logoff users"
+}
+
+variable "avd_scaling_plan_weekday_ramp_down_wait_time" {
+    type        = number
+    description = "AVD scaling plan weekday ramp DOWN wait time minutes"
+}
+
+variable "avd_scaling_plan_weekday_ramp_down_notification_msg" {
+    type        = string
+    description = "AVD scaling plan weekday ramp DOWN notification message"
+}
+
+variable "avd_scaling_plan_weekday_ramp_down_capacity_threshold_pct" {
+    type        = number
+    description = "AVD scaling plan weekday ramp DOWN capacity threshold percent"
+}
+
+variable "avd_scaling_plan_weekday_ramp_down_stop_hosts_when" {
+    type        = string
+    description = "AVD scaling plan weekday ramp DOWN stop hosts when"
+}
+
+variable "avd_scaling_plan_weekday_off_peak_start_time" {
+    type        = string
+    description = "AVD scaling plan weekday off peak start time"
+}
+
+variable "avd_scaling_plan_weekday_off_lb_algo" {
+    type        = string
+    description = "AVD scaling plan weekday off peak LB algorithm"
+}
+
+# scaling plan weekend schedule
+variable "avd_scaling_plan_weekend_name" {
+    type        = string
+    description = "AVD scaling plan weekend name"
+}
+
+variable "avd_scaling_plan_weekend_days" {
+    type        = list(string)
+    description = "AVD scaling plan weekend applicable days"
+}
+
+variable "avd_scaling_plan_weekend_ramp_up_start_time" {
+    type        = string
+    description = "AVD scaling plan weekend ramp up start time"
+}
+
+variable "avd_scaling_plan_weekend_ramp_up_lb_algo" {
+    type        = string
+    description = "AVD scaling plan weekend ramp up LB algorythm"
+}
+
+variable "avd_scaling_plan_weekend_ramp_up_minimum_host_pct" {
+    type        = number
+    description = "AVD scaling plan weekend ramup up minimum hosts percent"
+}
+
+variable "avd_scaling_plan_weekend_ramp_up_capacity_threshold_pct" {
+    type        = number
+    description = "AVD scaling plan weekend ramup up capacity threshold percent"
+}
+
+variable "avd_scaling_plan_weekend_ramp_up_peak_time" {
+    type        = string
+    description = "AVD scaling plan weekend ramp up peak start time"
+}
+
+variable "avd_scaling_plan_weekend_ramp_up_peak_lb_algo" {
+    type        = string
+    description = "AVD scaling plan weekend ramp up peak LB algorithm"
+}
+
+variable "avd_scaling_plan_weekend_ramp_down_start_time" {
+    type        = string
+    description = "AVD scaling plan weekend ramp DOWN start time"
+}
+
+variable "avd_scaling_plan_weekend_ramp_down_lb_algo" {
+    type        = string
+    description = "AVD scaling plan weekend ramp DOWN LB algorithm"
+}
+
+variable "avd_scaling_plan_weekend_ramp_down_minimum_host_pct" {
+    type        = number
+    description = "AVD scaling plan weekend ramp DOWN minimum hosts percent"
+}
+
+variable "avd_scaling_plan_weekend_ramp_down_force_logoff" {
+    type        = bool
+    description = "AVD scaling plan weekend ramp DOWN force logoff users"
+}
+
+variable "avd_scaling_plan_weekend_ramp_down_wait_time" {
+    type        = number
+    description = "AVD scaling plan weekend ramp DOWN wait time minutes"
+}
+
+variable "avd_scaling_plan_weekend_ramp_down_notification_msg" {
+    type        = string
+    description = "AVD scaling plan weekend ramp DOWN notification message"
+}
+
+variable "avd_scaling_plan_weekend_ramp_down_capacity_threshold_pct" {
+    type        = number
+    description = "AVD scaling plan weekend ramp DOWN capacity threshold percent"
+}
+
+variable "avd_scaling_plan_weekend_ramp_down_stop_hosts_when" {
+    type        = string
+    description = "AVD scaling plan weekend ramp DOWN stop hosts when"
+}
+
+variable "avd_scaling_plan_weekend_off_peak_start_time" {
+    type        = string
+    description = "AVD scaling plan weekend off peak start time"
+}
+
+variable "avd_scaling_plan_weekend_off_lb_algo" {
+    type        = string
+    description = "AVD scaling plan weekend off peak LB algorithm"
+}
+
 
 # prod session host
 variable "avd_session_host_count" {

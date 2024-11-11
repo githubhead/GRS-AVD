@@ -63,5 +63,49 @@ module "avd_compute" {
     avd_aad_group_name                   = var.avd_aad_group_name
     vm_user_login_role_name              = var.vm_user_login_role_name
     desktop_virtualization_role_name     = var.desktop_virtualization_role_name
+    # scaling plan variables
+    avd_autoscale_role                                        = var.avd_autoscale_role
+    avd_autoscale_role_desc                                   = var.avd_autoscale_role_desc 
+    avd_scaling_plan_name                                     = var.avd_scaling_plan_name
+    avd_scaling_plan_friendlyname                             = var.avd_scaling_plan_friendlyname
+    avd_scaling_plan_timezone                                 = var.avd_scaling_plan_timezone
+    # scaling plan weekday schedule
+    avd_scaling_plan_weekday_name                             = var.avd_scaling_plan_weekday_name 
+    avd_scaling_plan_weekday_days                             = var.avd_scaling_plan_weekday_days
+    avd_scaling_plan_weekday_ramp_up_start_time               = var.avd_scaling_plan_weekday_ramp_up_start_time 
+    avd_scaling_plan_weekday_ramp_up_lb_algo                  = var.avd_scaling_plan_weekday_ramp_up_lb_algo
+    avd_scaling_plan_weekday_ramp_up_minimum_host_pct         = var.avd_scaling_plan_weekday_ramp_up_minimum_host_pct
+    avd_scaling_plan_weekday_ramp_up_capacity_threshold_pct   = var.avd_scaling_plan_weekday_ramp_up_capacity_threshold_pct
+    avd_scaling_plan_weekday_ramp_up_peak_time                = var.avd_scaling_plan_weekday_ramp_up_peak_time
+    avd_scaling_plan_weekday_ramp_up_peak_lb_algo             = var.avd_scaling_plan_weekday_ramp_up_peak_lb_algo
+    avd_scaling_plan_weekday_ramp_down_start_time             = var.avd_scaling_plan_weekday_ramp_down_start_time
+    avd_scaling_plan_weekday_ramp_down_lb_algo                = var.avd_scaling_plan_weekday_ramp_down_lb_algo
+    avd_scaling_plan_weekday_ramp_down_minimum_host_pct       = var.avd_scaling_plan_weekday_ramp_down_minimum_host_pct
+    avd_scaling_plan_weekday_ramp_down_force_logoff           = var.avd_scaling_plan_weekday_ramp_down_force_logoff
+    avd_scaling_plan_weekday_ramp_down_wait_time              = var.avd_scaling_plan_weekday_ramp_down_wait_time
+    avd_scaling_plan_weekday_ramp_down_notification_msg       = var.avd_scaling_plan_weekday_ramp_down_notification_msg
+    avd_scaling_plan_weekday_ramp_down_capacity_threshold_pct = var.avd_scaling_plan_weekday_ramp_down_capacity_threshold_pct
+    avd_scaling_plan_weekday_ramp_down_stop_hosts_when        = var.avd_scaling_plan_weekday_ramp_down_stop_hosts_when
+    avd_scaling_plan_weekday_off_peak_start_time              = var.avd_scaling_plan_weekday_off_peak_start_time
+    avd_scaling_plan_weekday_off_lb_algo                      = var.avd_scaling_plan_weekday_off_lb_algo
+    # scaling plan weekend schedule
+    avd_scaling_plan_weekend_name                             = var.avd_scaling_plan_weekend_name
+    avd_scaling_plan_weekend_days                             = var.avd_scaling_plan_weekend_days
+    avd_scaling_plan_weekend_ramp_up_start_time               = var.avd_scaling_plan_weekend_ramp_up_start_time
+    avd_scaling_plan_weekend_ramp_up_lb_algo                  = var.avd_scaling_plan_weekend_ramp_up_lb_algo
+    avd_scaling_plan_weekend_ramp_up_minimum_host_pct         = var.avd_scaling_plan_weekend_ramp_up_minimum_host_pct
+    avd_scaling_plan_weekend_ramp_up_capacity_threshold_pct   = var.avd_scaling_plan_weekend_ramp_up_capacity_threshold_pct 
+    avd_scaling_plan_weekend_ramp_up_peak_time                = var.avd_scaling_plan_weekend_ramp_up_peak_time
+    avd_scaling_plan_weekend_ramp_up_peak_lb_algo             = var.avd_scaling_plan_weekend_ramp_up_peak_lb_algo
+    avd_scaling_plan_weekend_ramp_down_start_time             = var.avd_scaling_plan_weekend_ramp_down_start_time
+    avd_scaling_plan_weekend_ramp_down_lb_algo                = var.avd_scaling_plan_weekend_ramp_down_lb_algo
+    avd_scaling_plan_weekend_ramp_down_minimum_host_pct       = var.avd_scaling_plan_weekend_ramp_down_minimum_host_pct
+    avd_scaling_plan_weekend_ramp_down_force_logoff           = var.avd_scaling_plan_weekend_ramp_down_force_logoff
+    avd_scaling_plan_weekend_ramp_down_wait_time              = var.avd_scaling_plan_weekend_ramp_down_wait_time
+    avd_scaling_plan_weekend_ramp_down_notification_msg       = var.avd_scaling_plan_weekend_ramp_down_notification_msg
+    avd_scaling_plan_weekend_ramp_down_capacity_threshold_pct = var.avd_scaling_plan_weekend_ramp_down_capacity_threshold_pct
+    avd_scaling_plan_weekend_ramp_down_stop_hosts_when        = var.avd_scaling_plan_weekend_ramp_down_stop_hosts_when
+    avd_scaling_plan_weekend_off_peak_start_time              = var.avd_scaling_plan_weekend_off_peak_start_time
+    avd_scaling_plan_weekend_off_lb_algo                      = var.avd_scaling_plan_weekend_off_lb_algo
     depends_on = [ module.avd_network ]
 }
