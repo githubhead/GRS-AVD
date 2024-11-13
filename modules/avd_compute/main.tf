@@ -1,18 +1,15 @@
 # Creating data object to query subnet info for hosts
+# Assumes only one subnet exist in the vnet. 
+# If querying a vnet with multiple subnets, will need to use data.azurerm_subnet.<dataobjectname>.*.id and use logic to parse through the array when using the output
 data "azurerm_subnet" "avdsubnet" {
     name                 = var.avd_subnet_name
     virtual_network_name = var.vnet_spoke_name
     resource_group_name  = var.avd_net_rg
 }
 
-# Assumes only one subnet exist in the vnet. 
-# If querying a vnet with multiple subnets, will need to use data.azurerm_subnet.<dataobjectname>.*.id and use logic to parse through the array when using the output
-output "avd_subnet_ids" {
-    value                = "${data.azurerm_subnet.avdsubnet.id}"
-}
-
+#---------------------------
 # AVD Pools Resources
-# PROD
+#---------------------------
 # AVD Workspace
 resource "azurerm_resource_group" "avd_compute_rg" {
     name     = "${var.env}-${var.avd_compute_rg}"
@@ -23,6 +20,7 @@ resource "random_uuid" "avd_random_uuid" {
 }
 
 # For the autoscale to work we need a custom AAD role and assign it to the Azure Virtual Desktop service
+# PENDING: parametize
 data "azurerm_role_definition" "autoscale_power_role" {
   name = "Desktop Virtualization Power On Off Contributor"
   
@@ -31,11 +29,13 @@ data "azurerm_role_definition" "autoscale_power_role" {
 data "azurerm_subscription" "current" {
 }
 
+# PENDING: parametize
 data "azuread_service_principal" "avd_autoscale_spn" {
   display_name = "Azure Virtual Desktop"
 }
 
-# Assign role created
+# Assign autoscale role to registration.
+# PENDING: lower scope
 resource "azurerm_role_assignment" "avd_autoscale_role_assignment" {
   principal_id                     = data.azuread_service_principal.avd_autoscale_spn.object_id
   scope                            = data.azurerm_subscription.current.id
@@ -68,7 +68,6 @@ resource azurerm_virtual_desktop_host_pool "avd_hostpool" {
     maximum_sessions_allowed = var.avd_pool_max_session_limit
     validate_environment     = true
     start_vm_on_connect      = true
-    
 }
 
 resource "azurerm_virtual_desktop_host_pool_registration_info" "avd_hostpool_regitration_info" {
@@ -77,8 +76,8 @@ resource "azurerm_virtual_desktop_host_pool_registration_info" "avd_hostpool_reg
 }
 
 # Create desktop application group (DAG)
-resource azurerm_virtual_desktop_application_group "avd_app_group" {
-    name                         = "${var.env}-${var.avd_pool_name}-app-group"
+resource azurerm_virtual_desktop_application_group "avd_desktop_app_group" {
+    name                         = "${var.env}-${var.avd_pool_name}-desktop-app-group"
     resource_group_name          = azurerm_resource_group.avd_compute_rg.name
     location                     = azurerm_resource_group.avd_compute_rg.location
     host_pool_id                 = azurerm_virtual_desktop_host_pool.avd_hostpool.id
@@ -90,11 +89,11 @@ resource azurerm_virtual_desktop_application_group "avd_app_group" {
 
 # Workspace and Desktop Application Group (DAG) association
 resource "azurerm_virtual_desktop_workspace_application_group_association" "avd_workspace_app_group_assoc" {
-    application_group_id = azurerm_virtual_desktop_application_group.avd_app_group.id
+    application_group_id = azurerm_virtual_desktop_application_group.avd_desktop_app_group.id
     workspace_id         = azurerm_virtual_desktop_workspace.avd_workspace.id
 }
 
-#Create scaling plan
+# Create scaling plan
 resource "azurerm_virtual_desktop_scaling_plan" "avd_scaling_plan" {
   name = "${var.env}-${var.avd_scaling_plan_name}"
   location = azurerm_resource_group.avd_compute_rg.location
@@ -224,7 +223,7 @@ resource "azurerm_virtual_machine_extension" "aad_login" {
   type_handler_version = "1.0" # Check every once in a while to see if there is a more recent version
 }
 
-#Add VMs to Hostpool
+# Add VMs to Hostpool
 resource "azurerm_virtual_machine_extension" "vmext_dsc" {
   count                      = var.avd_session_host_count
   name                       = "${var.env}${count.index + 1}-avd_dsc"
@@ -258,28 +257,17 @@ PROTECTED_SETTINGS
   ]
 }
 
+#----------------------------------------------------
 # RBAC Configurations for VMs and application group
+#----------------------------------------------------
 # Define role for vm login
-data "azurerm_role_definition" "vm_user_login_role" { # access an existing built-in role
+data "azurerm_role_definition" "vm_user_login_role" { # access an existing built-in role Virtual Machine User Login
   name = var.vm_user_login_role_name
 }
 
+# Define group that will be granted vm login
 data "azuread_group" "avd_aad_group" {
   display_name = var.avd_aad_group_name
-}
-
-/*
-resource "azuread_group" "avd_aad_group" {
-  display_name     = var.avd_aad_group_name
-  security_enabled = true
-}
-*/
-
-# Assign role to Desktop Application Group
-resource "azurerm_role_assignment" "appgroup_role_assignment" {
-  scope              = azurerm_virtual_desktop_application_group.avd_app_group.id
-  role_definition_id = data.azurerm_role_definition.vm_user_login_role.id
-  principal_id       = data.azuread_group.avd_aad_group.object_id
 }
 
 # Assign user log in role to Host Session VMs (required for Entra ID joined VMs)
@@ -292,7 +280,7 @@ resource "azurerm_role_assignment" "vm_userlogin_role_assignment" {
 
 # Assign AAD Group to the Desktop Application Group (DAG)
 resource "azurerm_role_assignment" "AVDGroupDesktopAssignment" {
-  scope                = azurerm_virtual_desktop_application_group.avd_app_group.id
+  scope                = azurerm_virtual_desktop_application_group.avd_desktop_app_group.id
   role_definition_name = var.desktop_virtualization_role_name
   principal_id         = data.azuread_group.avd_aad_group.object_id
 }
@@ -303,6 +291,19 @@ resource "azurerm_role_assignment" "RBACAssignment" {
   role_definition_name = var.vm_user_login_role_name
   principal_id         = data.azuread_group.avd_aad_group.object_id
 }
+
+# Define group that will be entitled to desktop app group
+data "azuread_group" "avd_dag_entitlement" {
+  display_name = var.desktop_app_group_entitlement
+}
+
+# Desktop Application Group entitlement via Role assigned to entitlement group
+resource "azurerm_role_assignment" "desktop_appgroup_role_assignment" {
+  scope              = azurerm_virtual_desktop_application_group.avd_desktop_app_group.id
+  role_definition_id = data.azurerm_role_definition.vm_user_login_role.id
+  principal_id       = data.azuread_group.avd_dag_entitlement.object_id
+}
+
 
 /*
 #Domain Join
@@ -377,6 +378,7 @@ PROTECTED_SETTINGS
 Creating section to demonstrate applications configurations
 These tasks however should probably be moved to their own repo as they are day-to-day tasks instead of infra build
 */
+# Create Workspace for remote desktop apps
 resource "azurerm_virtual_desktop_application_group" "remote_application" {
   name = "remote_application"
   location = azurerm_resource_group.avd_compute_rg.location
@@ -387,6 +389,33 @@ resource "azurerm_virtual_desktop_application_group" "remote_application" {
   description = "Test Application Group"
 }
 
+resource "azurerm_virtual_desktop_workspace_application_group_association" "avd_workspace_remote_app_group_assoc" {
+    application_group_id = azurerm_virtual_desktop_application_group.remote_application.id
+    workspace_id         = azurerm_virtual_desktop_workspace.avd_workspace.id
+}
+
+# Create data object for remote entitlement group
+data "azuread_group" "avd_remoteapp_group_entitlement" {
+  display_name = "AVD-Remote_Apps_Group"
+}
+
+# assign the remote application using the same role and group as the desktop app
+resource "azurerm_role_assignment" "remote_appgroup_role_assignment" {
+  scope              = azurerm_virtual_desktop_application_group.remote_application.id
+  role_definition_name = var.desktop_virtualization_role_name
+  principal_id         = data.azuread_group.avd_remoteapp_group_entitlement.object_id
+}
+
+#Assign user log in role to Host Session VMs (required for Entra ID joined VMs)
+# PENDING: this role grants perhaps too great an access. Without it, connection to the host fails. With it, the app loads, but users can switch to a desktop and that's not the goal
+resource "azurerm_role_assignment" "vm_remoteapp_login_role_assignment" {
+  count              = var.avd_session_host_count
+  scope              = azurerm_windows_virtual_machine.avd_hostpool_session_host.*.id[count.index]
+  role_definition_id = data.azurerm_role_definition.vm_user_login_role.id
+  principal_id       = data.azuread_group.avd_remoteapp_group_entitlement.object_id
+}
+
+
 resource "azurerm_virtual_desktop_application" "app_adobe" {
   name = "adobe"
   application_group_id = azurerm_virtual_desktop_application_group.remote_application.id
@@ -395,7 +424,32 @@ resource "azurerm_virtual_desktop_application" "app_adobe" {
   path = "C:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\AcroRd32.exe"
   command_line_argument_policy = "DoNotAllow"
   command_line_arguments = "--incognito"
-  show_in_portal = false
+  show_in_portal = true
   icon_path = "C:\\Program Files (x86)\\Adobe\\Acrobat Reader DC\\Reader\\AcroRd32.exe"
   icon_index = 0
+}
+
+resource "azurerm_virtual_desktop_application" "app_edge" {
+  name = "MicrosoftEdge"
+  application_group_id = azurerm_virtual_desktop_application_group.remote_application.id
+  friendly_name = "Microsfot Edge"
+  description = "Microsfot Edge"
+  path = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+  command_line_argument_policy = "DoNotAllow"
+  command_line_arguments = "--incognito"
+  show_in_portal = true
+  icon_path = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+  icon_index = 0
+}
+
+resource "azurerm_virtual_desktop_application" "wordpad" {
+  name                         = "WordPad"
+  application_group_id = azurerm_virtual_desktop_application_group.remote_application.id
+  description                  = "WordPad application"
+  friendly_name                = "WordPad"
+  path                         = "C:\\Program Files\\Windows NT\\Accessories\\wordpad.exe"
+  command_line_argument_policy = "DoNotAllow"
+  command_line_arguments = "--incognito"
+  icon_index                   = 0
+  icon_path                    = "C:\\Program Files\\Windows NT\\Accessories\\wordpad.exe"
 }

@@ -98,6 +98,10 @@ avd_scaling_plan_weekend_off_peak_start_time              = "16:00"
 avd_scaling_plan_weekend_off_lb_algo                      = "BreadthFirst"
 
 # RBAC
-avd_aad_group_name                   = "VM-Access-Users"
-vm_user_login_role_name              = "Virtual Machine User Login"
+# roles
+vm_user_login_role_name              = "Virtual Machine User Login"     #Role for vm user login rights
 desktop_virtualization_role_name     = "Desktop Virtualization User"
+# groups
+avd_aad_group_name                   = "VM-Access-Users"                #Group to entitle log in into hosts
+remote_app_group_entitlement         = "AVD-Remote_Apps_Group"
+desktop_app_group_entitlement        = "AVD-Desktop_App_Group"

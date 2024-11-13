@@ -432,11 +432,8 @@ variable "domain_password" {
     sensitive = true
 }
 
-variable "avd_aad_group_name" {
-      type        = string
-      description = "Entra ID Group to allow access to AVD"
-}
 
+# RBAC
 variable "vm_user_login_role_name" {
     type        = string
     description = "Azure role for virtual machine user login"
@@ -445,4 +442,19 @@ variable "vm_user_login_role_name" {
 variable "desktop_virtualization_role_name" {
     type        = string
     description = "Azure role for virtual machine user login"
+}
+
+variable "avd_aad_group_name" {
+      type        = string
+      description = "Entra ID Group to allow access to AVD"
+}
+
+variable "remote_app_group_entitlement" {
+      type        = string
+      description = "Entra ID Group to entitle to remote app group (RAG)"
+}
+
+variable "desktop_app_group_entitlement" {
+      type        = string
+      description = "Entra ID Group to entitle to desktop app group (DAG)"
 }

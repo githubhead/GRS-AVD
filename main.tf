@@ -60,9 +60,11 @@ module "avd_compute" {
     ou_path                              = var.ou_path
     domain_user_upn                      = var.domain_user_upn
     domain_password                      = var.domain_password
-    avd_aad_group_name                   = var.avd_aad_group_name
     vm_user_login_role_name              = var.vm_user_login_role_name
     desktop_virtualization_role_name     = var.desktop_virtualization_role_name
+    avd_aad_group_name                   = var.avd_aad_group_name
+    desktop_app_group_entitlement        = var.desktop_app_group_entitlement
+    remote_app_group_entitlement         = var.remote_app_group_entitlement
     # scaling plan variables
     avd_autoscale_role                                        = var.avd_autoscale_role
     avd_autoscale_role_desc                                   = var.avd_autoscale_role_desc 
