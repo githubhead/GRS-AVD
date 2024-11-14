@@ -73,6 +73,11 @@ variable "profile_storage_account_name" {
     description = "fslogix file storage account"
 }
 
+variable "fslogix_storage_account_name" {
+    type        = string
+    description = "fslogix file storage account"
+}
+
 variable "storage_min_tls_version" {
     type        = string
     description = "minimum TLS version for storage account"
@@ -108,6 +113,62 @@ variable "file_storage_account_name" {
 variable "common_share_name" {   
     type        = string
     description = "common share name for testing"
+}
+
+# FS RBAC Variables
+# roles
+variable "fs_admin_role" {   
+    type        = string
+    description = "Az built in role for SMB administration. Role: Storage File Data SMB Share Elevated Contributor"
+}
+
+variable "fs_rw_role" {   
+    type        = string
+    description = "Az built in role for SMB R/W access. Role: Storage File Data SMB Share Contributor"
+}
+
+variable "fs_ro_role" {   
+    type        = string
+    description = "Az built in role for SMB read-only access. Role: Storage File Data SMB Share Reader"
+}
+
+# groups
+# fslogix
+variable "fs_fslogix_admin_group" {   
+    type        = string
+    description = "FSLogix share administrators group"
+}
+
+variable "fs_fslogix_rw_group" {   
+    type        = string
+    description = "FSLogix share R/W access group"
+}
+
+# user profiles
+variable "fs_profiles_admin_group" {   
+    type        = string
+    description = "User profiles share administrators group"
+}
+
+variable "fs_profiles_rw_group" {   
+    type        = string
+    description = "User profiles share R/W access group"
+}
+
+# common
+variable "fs_common_admin_group" {   
+    type        = string
+    description = "Common share administrators group"
+}
+
+variable "fs_common_rw_group" {   
+    type        = string
+    description = "Common share R/W access group"
+}
+
+variable "fs_common_ro_group" {   
+    type        = string
+    description = "Common share read-only access group"
 }
 
 #------------------------

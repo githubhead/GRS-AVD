@@ -22,13 +22,28 @@ module "avd_storage" {
     env                              = var.env
     avd_sa_rg                        = var.avd_sa_rg
     profile_storage_account_name     = var.profile_storage_account_name
+    fslogix_storage_account_name     = var.fslogix_storage_account_name
+    file_storage_account_name        = var.file_storage_account_name
     storage_min_tls_version          = var.storage_min_tls_version
     storage_account_tier             = var.storage_account_tier
     storage_account_replication_type = var.storage_account_replication_type
     fslogix_share_name               = var.fslogix_share_name
     profiles_share_name              = var.profiles_share_name
-    file_storage_account_name        = var.file_storage_account_name
     common_share_name                = var.common_share_name
+    avd_net_rg                       = "${var.env}-${var.avd_net_rg}"
+    avd_subnet_name                  = "${var.env}-${var.avd_subnet_name}"
+    vnet_spoke_name                  = "${var.env}-${var.vnet_spoke_name}"
+    # storage rbac
+    fs_admin_role                    = var.fs_admin_role
+    fs_rw_role                       = var.fs_rw_role
+    fs_ro_role                       = var.fs_ro_role
+    fs_fslogix_admin_group           = var.fs_fslogix_admin_group
+    fs_fslogix_rw_group              = var.fs_fslogix_rw_group
+    fs_profiles_admin_group          = var.fs_profiles_admin_group
+    fs_profiles_rw_group             = var.fs_profiles_rw_group
+    fs_common_admin_group            = var.fs_common_admin_group
+    fs_common_rw_group               = var.fs_common_rw_group
+    fs_common_ro_group               = var.fs_common_ro_group
 }
 
 # Create AVD Compute resources

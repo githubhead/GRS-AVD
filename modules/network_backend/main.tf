@@ -19,6 +19,7 @@ resource "azurerm_subnet" "avd_subnet" {
     resource_group_name  = azurerm_resource_group.avd_net_rg.name
     virtual_network_name = azurerm_virtual_network.avd_spoke_vnet.name
     address_prefixes     = var.avd_subnet_address_prefix
+    service_endpoints    = ["Microsoft.Storage"]
     #private_endpoint_network_policies = Enabled
     depends_on           = [ azurerm_resource_group.avd_net_rg ]
 }
@@ -28,6 +29,7 @@ resource "azurerm_subnet" "ad_subnet" {
     resource_group_name  = azurerm_resource_group.avd_net_rg.name
     virtual_network_name = azurerm_virtual_network.avd_spoke_vnet.name
     address_prefixes     = var.ad_subnet_address_prefix
+    service_endpoints    = ["Microsoft.Storage"]
     #private_endpoint_network_policies = Enabled
     depends_on           = [ azurerm_resource_group.avd_net_rg ]
 }

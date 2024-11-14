@@ -1,8 +1,12 @@
-# Global variables
+#-------------------
+# GLOBAL VARS
+#-------------------
 env                    = "dev"
 location               = "eastus"
 
-# Network Variables
+#----------------
+# NETWORK BACKEND
+#----------------
 avd_net_rg                = "avd-net-rg"
 vnet_spoke_name           = "avd-spoke-vnet"
 avd_subnet_name           = "avd-subnet"
@@ -12,11 +16,13 @@ ad_subnet_address_prefix  = ["10.0.49.0/24"]
 avd_subnet_address_prefix = ["10.0.50.0/24"]
 dns_servers               = ["168.63.129.16"]
 
-
-# Storage Variables
+#----------------
+# STORAGE BACKEND
+#----------------
 avd_sa_rg                        = "avd-stor-rg"
 profile_storage_account_name     = "profilestorage"
 file_storage_account_name        = "commonstorage"
+fslogix_storage_account_name     = "fslogixprofiles"
 storage_min_tls_version          = "TLS1_2"
 storage_account_tier             = "Premium"
 storage_account_replication_type = "LRS"
@@ -24,8 +30,24 @@ fslogix_share_name               = "fslogix"
 profiles_share_name              = "avdprofiles"
 common_share_name                = "commonshare"
 
+# Storage RBAC
+# roles
+fs_admin_role  = "Storage File Data SMB Share Elevated Contributor"
+fs_rw_role     = "Storage File Data SMB Share Contributor"
+fs_ro_role     = "Storage File Data SMB Share Reader"
 
-# AVD Compute Variables
+# groups
+fs_fslogix_admin_group = "FS-FSLogix-Admin"
+fs_fslogix_rw_group    = "FS-FSLogix-RW"
+fs_profiles_admin_group = "FS-ProfileShare-Admin"
+fs_profiles_rw_group    = "FS-ProfileShare-RW"
+fs_common_admin_group   = "FS-Common-Admin"
+fs_common_rw_group      = "FS-Common-RW"
+fs_common_ro_group      = "FS-Common-RO"
+
+#----------------------
+# AVD COMPUTE VARIABLES
+#----------------------
 avd_compute_rg                       = "avd-compute-rg"
 avd_autoscale_role                   = "avd-autoscale-role"
 avd_autoscale_role_desc              = "AVD Autoscale Custom Role"
@@ -33,7 +55,7 @@ avd_workspace                        = "avd_workspace"
 avd_pool_name                        = "avd-pool"
 avd_pool_friendly_name               = "AVD Host Pool"
 avd_pool_loadbalancer                = "BreadthFirst"
-avd_pool_custom_rdp_properties       = "audiocapturemode:i:1;audiomode:i:0;enablerdsaadauth:i:1;autoreconnection enabled:i:1;bandwidthautodetect:i:1;redirectclipboard:i:0;redirectprinters:i:0;redirectsmartcards:i:0;redirectwebauthn:i:0;"    #audiocapturemode:i:1;audiomode:i:0;targetisaadjoined:i:1;
+avd_pool_custom_rdp_properties       = "audiocapturemode:i:0;audiomode:i:0;enablerdsaadauth:i:1;autoreconnection enabled:i:1;bandwidthautodetect:i:1;redirectclipboard:i:0;redirectprinters:i:0;redirectsmartcards:i:0;redirectwebauthn:i:0;"    #audiocapturemode:i:1;audiomode:i:0;targetisaadjoined:i:1;
 avd_pool_max_session_limit           = 16
 avd_pool_registation_expiration      = "36h"
 avd_session_host_count               = 2
@@ -97,7 +119,7 @@ avd_scaling_plan_weekend_ramp_down_stop_hosts_when        = "ZeroActiveSessions"
 avd_scaling_plan_weekend_off_peak_start_time              = "16:00"
 avd_scaling_plan_weekend_off_lb_algo                      = "BreadthFirst"
 
-# RBAC
+# AVD RBAC
 # roles
 vm_user_login_role_name              = "Virtual Machine User Login"     #Role for vm user login rights
 desktop_virtualization_role_name     = "Desktop Virtualization User"
