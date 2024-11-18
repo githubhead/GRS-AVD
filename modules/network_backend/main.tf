@@ -79,3 +79,39 @@ resource "azurerm_subnet_network_security_group_association" "ad_subnet_nsg" {
     subnet_id                 = azurerm_subnet.ad_subnet.id
     network_security_group_id = azurerm_network_security_group.ad_nsg.id
 }
+
+/*
+    Private endpoints
+    Creates an Azure Private DNS zone: privatelink.blob.core.windows.net
+    Associates the private DNS zone with the already created VNet to allow for private DNS to work correctly
+    The private dns zone name is predefined depending on use
+    Naming ref: https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns#azure-services-dns-zone-configuration
+*/
+
+# blob
+resource "azurerm_private_dns_zone" "pep_blob_private_dns_zone" {
+  name = var.private_dns_zone_blob
+  resource_group_name = azurerm_resource_group.avd_net_rg.name
+}
+
+# vnet link for storage private endpoints
+resource "azurerm_private_dns_zone_virtual_network_link" "pep_blob_vnet_link" {
+  name = "${var.env}-sa-pep-blob-vnetlink"
+  resource_group_name = azurerm_resource_group.avd_net_rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.pep_blob_private_dns_zone.name
+  virtual_network_id = azurerm_virtual_network.avd_spoke_vnet.id
+}
+
+# file
+resource "azurerm_private_dns_zone" "pep_file_private_dns_zone" {
+  name = var.private_dns_zone_file
+  resource_group_name = azurerm_resource_group.avd_net_rg.name
+}
+
+# vnet link for storage private endpoints
+resource "azurerm_private_dns_zone_virtual_network_link" "pep_file_vnet_link" {
+  name = "${var.env}-sa-pep-file-vnetlink"
+  resource_group_name = azurerm_resource_group.avd_net_rg.name
+  private_dns_zone_name = azurerm_private_dns_zone.pep_file_private_dns_zone.name
+  virtual_network_id = azurerm_virtual_network.avd_spoke_vnet.id
+}

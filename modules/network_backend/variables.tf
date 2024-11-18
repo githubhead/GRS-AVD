@@ -51,3 +51,14 @@ variable "dns_servers" {
     description = "DNS severs for deployed VMs"
     #default    = ["168.63.129.16"]
 }
+
+# private endpoints
+variable "private_dns_zone_blob" {   
+    type        = string
+    description = "MS predefined private dns zone name for blob storage"
+}
+
+variable "private_dns_zone_file" {   
+    type        = string
+    description = "MS predefined private dns zone name for file storage"
+}

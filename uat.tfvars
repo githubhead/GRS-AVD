@@ -1,7 +1,7 @@
 #-------------------
 # GLOBAL VARS
 #-------------------
-env                    = "dev"
+env                    = "uat"
 location               = "eastus"
 
 #----------------
@@ -11,9 +11,9 @@ avd_net_rg                = "avd-net-rg"
 vnet_spoke_name           = "avd-spoke-vnet"
 avd_subnet_name           = "avd-subnet"
 ad_subnet_name            = "ad-subnet"
-vnet_spoke_address_space  = ["10.0.48.0/20"]
-ad_subnet_address_prefix  = ["10.0.49.0/24"]
-avd_subnet_address_prefix = ["10.0.50.0/24"]
+vnet_spoke_address_space  = ["10.0.80.0/20"]
+ad_subnet_address_prefix  = ["10.0.81.0/24"]
+avd_subnet_address_prefix = ["10.0.82.0/24"]
 dns_servers               = ["168.63.129.16"]
 
 # private endpoints

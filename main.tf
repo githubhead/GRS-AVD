@@ -13,37 +13,44 @@ module "avd_network" {
     ad_subnet_address_prefix  = var.ad_subnet_address_prefix
     avd_subnet_address_prefix = var.avd_subnet_address_prefix
     dns_servers               = var.dns_servers
+    # private endpoint
+    private_dns_zone_blob              = var.private_dns_zone_blob
+    private_dns_zone_file              = var.private_dns_zone_file
 }
 
 # Create AVD Storage resources
 module "avd_storage" {
-    source                           = "./modules/storage_backend"
-    location                         = var.location
-    env                              = var.env
-    avd_sa_rg                        = var.avd_sa_rg
-    profile_storage_account_name     = var.profile_storage_account_name
-    fslogix_storage_account_name     = var.fslogix_storage_account_name
-    file_storage_account_name        = var.file_storage_account_name
-    storage_min_tls_version          = var.storage_min_tls_version
-    storage_account_tier             = var.storage_account_tier
-    storage_account_replication_type = var.storage_account_replication_type
-    fslogix_share_name               = var.fslogix_share_name
-    profiles_share_name              = var.profiles_share_name
-    common_share_name                = var.common_share_name
-    avd_net_rg                       = "${var.env}-${var.avd_net_rg}"
-    avd_subnet_name                  = "${var.env}-${var.avd_subnet_name}"
-    vnet_spoke_name                  = "${var.env}-${var.vnet_spoke_name}"
+    source                             = "./modules/storage_backend"
+    location                           = var.location
+    env                                = var.env
+    avd_sa_rg                          = var.avd_sa_rg
+    profile_storage_account_name       = var.profile_storage_account_name
+    fslogix_storage_account_name       = var.fslogix_storage_account_name
+    file_storage_account_name          = var.file_storage_account_name
+    golden_images_storage_account_name = var.golden_images_storage_account_name
+    storage_min_tls_version            = var.storage_min_tls_version
+    storage_account_tier               = var.storage_account_tier
+    storage_account_replication_type   = var.storage_account_replication_type
+    fslogix_share_name                 = var.fslogix_share_name
+    profiles_share_name                = var.profiles_share_name
+    common_share_name                  = var.common_share_name
+    avd_net_rg                         = "${var.env}-${var.avd_net_rg}"
+    avd_subnet_name                    = "${var.env}-${var.avd_subnet_name}"
+    vnet_spoke_name                    = "${var.env}-${var.vnet_spoke_name}"
+    # private endpoint
+    private_dns_zone_blob              = var.private_dns_zone_blob
+    private_dns_zone_file              = var.private_dns_zone_file
     # storage rbac
-    fs_admin_role                    = var.fs_admin_role
-    fs_rw_role                       = var.fs_rw_role
-    fs_ro_role                       = var.fs_ro_role
-    fs_fslogix_admin_group           = var.fs_fslogix_admin_group
-    fs_fslogix_rw_group              = var.fs_fslogix_rw_group
-    fs_profiles_admin_group          = var.fs_profiles_admin_group
-    fs_profiles_rw_group             = var.fs_profiles_rw_group
-    fs_common_admin_group            = var.fs_common_admin_group
-    fs_common_rw_group               = var.fs_common_rw_group
-    fs_common_ro_group               = var.fs_common_ro_group
+    fs_admin_role                      = var.fs_admin_role
+    fs_rw_role                         = var.fs_rw_role
+    fs_ro_role                         = var.fs_ro_role
+    fs_fslogix_admin_group             = var.fs_fslogix_admin_group
+    fs_fslogix_rw_group                = var.fs_fslogix_rw_group
+    fs_profiles_admin_group            = var.fs_profiles_admin_group
+    fs_profiles_rw_group               = var.fs_profiles_rw_group
+    fs_common_admin_group              = var.fs_common_admin_group
+    fs_common_rw_group                 = var.fs_common_rw_group
+    fs_common_ro_group                 = var.fs_common_ro_group
 }
 
 # Create AVD Compute resources

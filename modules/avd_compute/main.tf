@@ -162,12 +162,12 @@ resource "random_string" "prod_avd_local_password" {
 
 resource azurerm_network_interface "avd_hostpool_nic" {
     count               = var.avd_session_host_count
-    name                = "${var.avd_session_host_nic_name}-${count.index + 1}"
+    name                = "${var.env}-${var.avd_session_host_nic_name}-${count.index + 1}"
     location            = azurerm_resource_group.avd_compute_rg.location
     resource_group_name = azurerm_resource_group.avd_compute_rg.name
 
     ip_configuration {
-      name                          = "nic${count.index + 1}_config"
+      name                          = "${var.env}_nic${count.index + 1}_config"
       subnet_id                     = data.azurerm_subnet.avdsubnet.id
       private_ip_address_allocation = "Dynamic"
     }

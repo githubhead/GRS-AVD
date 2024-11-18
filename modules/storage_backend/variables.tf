@@ -30,17 +30,17 @@ variable "vnet_spoke_name" {
     description = "predefined virtual network. Will be referenced in data sources"
 }
 
+variable "private_dns_zone_blob" {   
+    type        = string
+    description = "MS predefined private dns zone name for blob storage"
+}
+
+variable "private_dns_zone_file" {   
+    type        = string
+    description = "MS predefined private dns zone name for file storage"
+}
+
 #Storage account variables
-variable "profile_storage_account_name" {
-    type        = string
-    description = "fslogix file storage account"
-}
-
-variable "fslogix_storage_account_name" {
-    type        = string
-    description = "fslogix file storage account"
-}
-
 variable "storage_min_tls_version" {
     type        = string
     description = "minimum TLS version for storage account"
@@ -56,6 +56,26 @@ variable "storage_account_replication_type" {
     description = "Storage account replication type"
 }
 
+variable "profile_storage_account_name" {
+    type        = string
+    description = "fslogix file storage account"
+}
+
+variable "fslogix_storage_account_name" {
+    type        = string
+    description = "fslogix file storage account"
+}
+
+variable "file_storage_account_name" {
+    type        = string
+    description = "profile storage account"
+}
+
+variable "golden_images_storage_account_name" {
+    type        = string
+    description = "golden images storage account"
+}
+
 # File shares variables
 variable "fslogix_share_name" {
     type        = string
@@ -65,12 +85,6 @@ variable "fslogix_share_name" {
 variable "profiles_share_name" {
     type        = string
     description = "share name for avd profiles"
-}
-
-# creating a general fs storage account and common share, but global file shares will need to be created and managed separately
-variable "file_storage_account_name" {
-    type        = string
-    description = "profile storage account"
 }
 
 variable "common_share_name" {   
