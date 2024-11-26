@@ -25,6 +25,12 @@ variable "avd_subnet_name" {
     description = "predefined subnet for avd network. Will be referenced in data sources"
 }
 
+variable "avd_subnet_id" {
+    type        = string
+    description = "placeholder variable for subent id. This is a value that is derived after build"
+    default = ""
+}
+
 variable "vnet_spoke_name" {
     type        = string
     description = "predefined virtual network. Will be referenced in data sources"
@@ -35,9 +41,19 @@ variable "private_dns_zone_blob" {
     description = "MS predefined private dns zone name for blob storage"
 }
 
+variable "private_dns_zone_blob_id" {   
+    type        = string
+    description = "MS predefined private dns zone id for blob storage"
+}
+
 variable "private_dns_zone_file" {   
     type        = string
     description = "MS predefined private dns zone name for file storage"
+}
+
+variable "private_dns_zone_file_id" {   
+    type        = string
+    description = "MS predefined private dns zone id for file storage"
 }
 
 #Storage account variables

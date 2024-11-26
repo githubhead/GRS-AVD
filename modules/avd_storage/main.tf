@@ -20,8 +20,8 @@ resource "random_string" "r_string" {
     Creating data object to query subnet info for storage account fw rules
     Assumes only one subnet exist in the vnet. 
     If querying a vnet with multiple subnets, will need to use data.azurerm_subnet.<dataobjectname>.*.id and use logic to parse through the array when using the output
-*/
-data "azurerm_subnet" "avdsubnet" {
+
+#data "azurerm_subnet" "avdsubnet" {
     name                 = var.avd_subnet_name
     virtual_network_name = var.vnet_spoke_name
     resource_group_name  = var.avd_net_rg
@@ -35,6 +35,7 @@ data "azurerm_private_dns_zone" "sa_pep_blob_private_dns_zone" {
 data "azurerm_private_dns_zone" "sa_pep_file_private_dns_zone" {
   name = var.private_dns_zone_file
 }
+*/
 
 # Create Storage Accounts and Shares
 # Storage account for: user profiles
@@ -63,10 +64,10 @@ resource "azurerm_storage_account" "profiles_sa" {
     network_rules {
       default_action             = "Deny"
       bypass                     = ["AzureServices"]
-      virtual_network_subnet_ids = [ data.azurerm_subnet.avdsubnet.id ]
+      virtual_network_subnet_ids = [var.avd_subnet_id]  #[ data.azurerm_subnet.avdsubnet.id ]
     }
 
-    depends_on = [ data.azurerm_subnet.avdsubnet ]
+    depends_on = [ ]
 }
 
 # create user profiles share
@@ -82,7 +83,7 @@ resource "azurerm_private_endpoint" "profiles_pep" {
   name                = "${var.env}-${var.profile_storage_account_name}-private-endpoint"
   location            = azurerm_resource_group.avd_sa_rg.location
   resource_group_name = azurerm_resource_group.avd_sa_rg.name
-  subnet_id           = data.azurerm_subnet.avdsubnet.id
+  subnet_id           = var.avd_subnet_id  #data.azurerm_subnet.avdsubnet.id
 
   private_service_connection {
     name                           = "${var.env}-${var.profile_storage_account_name}-endpoint-connection"
@@ -93,7 +94,7 @@ resource "azurerm_private_endpoint" "profiles_pep" {
 
   private_dns_zone_group {
     name                 = "${var.env}-${var.profile_storage_account_name}-storage-endpoint-connection"
-    private_dns_zone_ids = [ data.azurerm_private_dns_zone.sa_pep_file_private_dns_zone.id ]
+    private_dns_zone_ids = [var.private_dns_zone_file_id]  #[ data.azurerm_private_dns_zone.sa_pep_file_private_dns_zone.id ]
   }
 
   depends_on = [ azurerm_storage_account.profiles_sa ]
@@ -102,8 +103,8 @@ resource "azurerm_private_endpoint" "profiles_pep" {
 # create private DNS record for profiles storage account in the private DNS zone
 resource "azurerm_private_dns_a_record" "profiles_sa_a_rec" {
   name                = "${var.env}-${var.profile_storage_account_name}-sa"
-  zone_name           = var.private_dns_zone_blob
-  resource_group_name = data.azurerm_subnet.avdsubnet.resource_group_name
+  zone_name           = var.private_dns_zone_file
+  resource_group_name = var.avd_net_rg  #data.azurerm_subnet.avdsubnet.resource_group_name
   ttl = 200
   records = [azurerm_private_endpoint.profiles_pep.private_service_connection.0.private_ip_address]
 }
@@ -134,10 +135,10 @@ resource "azurerm_storage_account" "fslogix_sa" {
     network_rules {
       default_action             = "Deny"
       bypass                     = ["AzureServices"]
-      virtual_network_subnet_ids = [ data.azurerm_subnet.avdsubnet.id ]
+      virtual_network_subnet_ids = [var.avd_subnet_id] #[ data.azurerm_subnet.avdsubnet.id ]
     }
 
-    depends_on = [ data.azurerm_subnet.avdsubnet ]
+    depends_on = [ ]
 }
 
 # Create share for fslogix profiles
@@ -156,7 +157,7 @@ resource "azurerm_private_endpoint" "fslogix_pep" {
   name                = "${var.env}-${var.fslogix_storage_account_name}-private-endpoint"
   location            = azurerm_resource_group.avd_sa_rg.location
   resource_group_name = azurerm_resource_group.avd_sa_rg.name
-  subnet_id           = data.azurerm_subnet.avdsubnet.id
+  subnet_id           = var.avd_subnet_id #data.azurerm_subnet.avdsubnet.id
 
   private_service_connection {
     name                           = "${var.env}-${var.fslogix_storage_account_name}-endpoint-connection"
@@ -167,7 +168,7 @@ resource "azurerm_private_endpoint" "fslogix_pep" {
 
   private_dns_zone_group {
     name                 = "${var.env}-${var.fslogix_storage_account_name}-storage-endpoint-connection"
-    private_dns_zone_ids = [ data.azurerm_private_dns_zone.sa_pep_file_private_dns_zone.id ]
+    private_dns_zone_ids = [var.private_dns_zone_file_id]   #[ data.azurerm_private_dns_zone.sa_pep_file_private_dns_zone.id ]
   }
 
   depends_on = [ azurerm_storage_account.fslogix_sa ]
@@ -176,8 +177,8 @@ resource "azurerm_private_endpoint" "fslogix_pep" {
 # create private DNS record for profiles storage account in the private DNS zone
 resource "azurerm_private_dns_a_record" "fslogix_sa_a_rec" {
   name                = "${var.env}-${var.fslogix_storage_account_name}-sa"
-  zone_name           = var.private_dns_zone_blob
-  resource_group_name = data.azurerm_subnet.avdsubnet.resource_group_name
+  zone_name           = var.private_dns_zone_file
+  resource_group_name = var.avd_net_rg  #data.azurerm_subnet.avdsubnet.resource_group_name
   ttl = 200
   records = [azurerm_private_endpoint.fslogix_pep.private_service_connection.0.private_ip_address]
 }
@@ -208,10 +209,10 @@ resource "azurerm_storage_account" "fs_sa" {
     network_rules {
       default_action             = "Deny"
       bypass                     = ["AzureServices"]
-      virtual_network_subnet_ids = [data.azurerm_subnet.avdsubnet.id]
+      virtual_network_subnet_ids = [var.avd_subnet_id] #[data.azurerm_subnet.avdsubnet.id]
     }
 
-    depends_on = [ data.azurerm_subnet.avdsubnet ]
+    depends_on = [  ]
 }
 
 # Create common share
@@ -231,7 +232,7 @@ resource "azurerm_private_endpoint" "fs_common_pep" {
   name                = "${var.env}-${var.file_storage_account_name}-private-endpoint"
   location            = azurerm_resource_group.avd_sa_rg.location
   resource_group_name = azurerm_resource_group.avd_sa_rg.name
-  subnet_id           = data.azurerm_subnet.avdsubnet.id
+  subnet_id           = var.avd_subnet_id #data.azurerm_subnet.avdsubnet.id
 
   private_service_connection {
     name                           = "${var.env}-${var.file_storage_account_name}-endpoint-connection"
@@ -242,7 +243,7 @@ resource "azurerm_private_endpoint" "fs_common_pep" {
 
   private_dns_zone_group {
     name                 = "${var.env}-${var.file_storage_account_name}-storage-endpoint-connection"
-    private_dns_zone_ids = [ data.azurerm_private_dns_zone.sa_pep_file_private_dns_zone.id ]
+    private_dns_zone_ids = [var.private_dns_zone_file_id]  #[ data.azurerm_private_dns_zone.sa_pep_file_private_dns_zone.id ]
   }
 
   depends_on = [ azurerm_storage_account.fs_sa ]
@@ -251,8 +252,8 @@ resource "azurerm_private_endpoint" "fs_common_pep" {
 # create private DNS record for fs common storage account in the private DNS zone
 resource "azurerm_private_dns_a_record" "fs_common_sa_a_rec" {
   name                = "${var.env}-${var.file_storage_account_name}-sa"
-  zone_name           = var.private_dns_zone_blob
-  resource_group_name = data.azurerm_subnet.avdsubnet.resource_group_name
+  zone_name           = var.private_dns_zone_file
+  resource_group_name = var.avd_net_rg  #data.azurerm_subnet.avdsubnet.resource_group_name
   ttl = 200
   records = [azurerm_private_endpoint.fs_common_pep.private_service_connection.0.private_ip_address]
 }
@@ -281,12 +282,11 @@ resource "azurerm_storage_account" "golden_images_sa" {
     network_rules {
       default_action             = "Deny"
       bypass                     = ["AzureServices"]
-      virtual_network_subnet_ids = [data.azurerm_subnet.avdsubnet.id]
+      virtual_network_subnet_ids = [var.avd_subnet_id]  #[data.azurerm_subnet.avdsubnet.id]
     }
 
     depends_on = [ 
-      azurerm_resource_group.avd_sa_rg,
-      data.azurerm_subnet.avdsubnet 
+      azurerm_resource_group.avd_sa_rg 
     ]
 }
 
@@ -295,7 +295,7 @@ resource "azurerm_private_endpoint" "golden_images_pep" {
   name                = "${var.env}-${var.golden_images_storage_account_name}-private-endpoint"
   location            = azurerm_resource_group.avd_sa_rg.location
   resource_group_name = azurerm_resource_group.avd_sa_rg.name
-  subnet_id           = data.azurerm_subnet.avdsubnet.id
+  subnet_id           = var.avd_subnet_id #data.azurerm_subnet.avdsubnet.id
 
   private_service_connection {
     name                           = "${var.env}-${var.golden_images_storage_account_name}-endpoint-connection"
@@ -306,7 +306,7 @@ resource "azurerm_private_endpoint" "golden_images_pep" {
 
   private_dns_zone_group {
     name                 = "${var.env}-${var.golden_images_storage_account_name}-storage-endpoint-connection"
-    private_dns_zone_ids = [ data.azurerm_private_dns_zone.sa_pep_blob_private_dns_zone.id ]
+    private_dns_zone_ids = [var.private_dns_zone_blob_id] #[ data.azurerm_private_dns_zone.sa_pep_blob_private_dns_zone.id ]
   }
 
   depends_on = [ azurerm_storage_account.golden_images_sa ]
@@ -316,7 +316,7 @@ resource "azurerm_private_endpoint" "golden_images_pep" {
 resource "azurerm_private_dns_a_record" "golden_images_a_rec" {
   name                = "${var.env}-${var.golden_images_storage_account_name}-sa"
   zone_name           = var.private_dns_zone_blob
-  resource_group_name = data.azurerm_subnet.avdsubnet.resource_group_name
+  resource_group_name = var.avd_net_rg  #data.azurerm_subnet.avdsubnet.resource_group_name
   ttl = 200
   records = [azurerm_private_endpoint.golden_images_pep.private_service_connection.0.private_ip_address]
 }

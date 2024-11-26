@@ -66,7 +66,7 @@ variable "private_dns_zone_blob" {
 
 variable "private_dns_zone_file" {   
     type        = string
-    description = "MS predefined private dns zone name for file storage"
+    description = "MS predefined private dns zone id for file storage"
 }
 
 #------------------------

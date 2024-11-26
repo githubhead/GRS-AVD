@@ -2,7 +2,7 @@
 
 # Create AVD spoke network resources
 module "avd_network" {
-    source                    = "./modules/network_backend"
+    source                    = "./modules/avd_network"
     location                  = var.location
     env                       = var.env
     avd_net_rg                = var.avd_net_rg
@@ -20,7 +20,7 @@ module "avd_network" {
 
 # Create AVD Storage resources
 module "avd_storage" {
-    source                             = "./modules/storage_backend"
+    source                             = "./modules/avd_storage"
     location                           = var.location
     env                                = var.env
     avd_sa_rg                          = var.avd_sa_rg
@@ -34,12 +34,15 @@ module "avd_storage" {
     fslogix_share_name                 = var.fslogix_share_name
     profiles_share_name                = var.profiles_share_name
     common_share_name                  = var.common_share_name
-    avd_net_rg                         = "${var.env}-${var.avd_net_rg}"
-    avd_subnet_name                    = "${var.env}-${var.avd_subnet_name}"
-    vnet_spoke_name                    = "${var.env}-${var.vnet_spoke_name}"
+    avd_net_rg                         = module.avd_network.avd_subnet_rgname_out  #"${var.env}-${var.avd_net_rg}"
+    avd_subnet_name                    = module.avd_network.avd_subnet_rgname_out  #"${var.env}-${var.avd_subnet_name}"
+    avd_subnet_id                      = module.avd_network.avd_subnet_id_out
+    vnet_spoke_name                    = module.avd_network.vnet_spoke_name_out  #"${var.env}-${var.vnet_spoke_name}"
     # private endpoint
-    private_dns_zone_blob              = var.private_dns_zone_blob
-    private_dns_zone_file              = var.private_dns_zone_file
+    private_dns_zone_blob_id           = module.avd_network.sa_pe_blob_private_dns_zone_id_out  #var.private_dns_zone_blob
+    private_dns_zone_blob              = module.avd_network.sa_pe_blob_private_dns_zone_name_out
+    private_dns_zone_file_id           = module.avd_network.sa_pe_file_private_dns_zone_id_out  #var.private_dns_zone_file
+    private_dns_zone_file              = module.avd_network.sa_pe_file_private_dns_zone_name_out
     # storage rbac
     fs_admin_role                      = var.fs_admin_role
     fs_rw_role                         = var.fs_rw_role
